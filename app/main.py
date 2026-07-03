@@ -1,38 +1,28 @@
-import sys
-from pathlib import Path
+from fastapi import FastAPI
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
-
-from app.crud import get_books, get_categories
-from app.db import SessionLocal
+from app.api import book_routes, category_routes
+from app.db import create_tables
 
 
-def show_database_content() -> None:
-    session = SessionLocal()
-
-    try:
-        categories = get_categories(session)
-        books = get_books(session)
-
-        print("список категорий:")
-        for category in categories:
-            print(f"{category.id}) {category.title}")
-
-        print()
-        print("список книг:")
-
-        for book in books:
-            print(f"{book.id}) {book.title}")
-            print(f"   категория: {book.category.title}")
-            print(f"   цена: {book.price} руб.")
-            print(f"   описание: {book.description}")
-            print(f"   ссылка: {book.url}")
-            print()
-
-    finally:
-        session.close()
+app = FastAPI(
+    title="practika book service",
+    description="API для учебного каталога книг на FastAPI и PostgreSQL.",
+    version="1.0.0",
+)
 
 
-if __name__ == "__main__":
-    show_database_content()
+@app.on_event("startup")
+def prepare_app() -> None:
+    create_tables()
+
+
+@app.get("/health", tags=["service"])
+def health_check() -> dict[str, str]:
+    return {
+        "status": "ok",
+        "service": "practika-api",
+    }
+
+
+app.include_router(category_routes.router)
+app.include_router(book_routes.router)

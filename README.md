@@ -1,37 +1,47 @@
 # Practika
 
-Учебный Python-проект с подключением к PostgreSQL.
+Учебный Python-проект с PostgreSQL и FastAPI.
 
 ## Что реализовано
 
-В проект добавлена работа с базой данных через SQLAlchemy.
+В проект добавлен API для работы с каталогом книг.
 
 Сделано:
 
 - подключение к PostgreSQL;
-- модели Category и Book;
-- создание таблиц;
-- CRUD-операции для категорий и книг;
-- заполнение базы стартовыми данными;
-- вывод данных из базы в терминал.
+- SQLAlchemy-модели Category и Book;
+- Pydantic-схемы для API;
+- CRUD для категорий;
+- CRUD для книг;
+- фильтрация книг по категории;
+- endpoint /health;
+- Swagger-документация;
+- проверка данных в PostgreSQL.
 
 ## Структура проекта
 
 app/
+  api/
+    category_routes.py
+    book_routes.py
   db.py
   models.py
   crud.py
   init_db.py
   main.py
+  schemas.py
 
 examples/
-  database_result.png
+  database_result.jpg
+  swagger_page.png
+  api_books_request.png
+  postgres_tables.png
 
 .gitignore
 requirements.txt
 README.md
 
-## Локальные настройки
+## Локальная настройка
 
 Для запуска проекта в корне должен быть файл .env.
 
@@ -55,6 +65,26 @@ pip install -r requirements.txt
 
 python3 app/init_db.py
 
-## Запуск
+## Запуск API
 
-python3 app/main.py
+uvicorn app.main:app --reload
+
+После запуска можно открыть:
+
+http://127.0.0.1:8000/docs
+
+## Проверка
+
+Основные адреса:
+
+GET /health
+
+GET /categories/
+
+POST /categories/
+
+GET /books/
+
+GET /books/?category_id=1
+
+POST /books/

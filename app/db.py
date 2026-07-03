@@ -1,9 +1,10 @@
 import os
 from pathlib import Path
+from typing import Generator
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 
 ROOT_PATH = Path(__file__).resolve().parent.parent
@@ -32,6 +33,15 @@ SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
 )
+
+
+def get_db() -> Generator[Session, None, None]:
+    database = SessionLocal()
+
+    try:
+        yield database
+    finally:
+        database.close()
 
 
 def create_tables() -> None:
